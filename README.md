@@ -3,7 +3,7 @@
 
 
 
-[![Build Status]()
+
 
 **FX** is built using the object oriented programming language _MQL4_, developed by _Metatrader_. Both models, **MACD** and **MA** are developed for automated forex trading. The following information explains briefly how both programs work. 
 
