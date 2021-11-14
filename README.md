@@ -22,8 +22,8 @@ The **MA Strategy** uses moving averages to calculate short and long buy positio
  The models can be run in the _Metatrader_ environment for automated trading. Before running, the models need to be compiled. 
  
  ## Additional Information
- 1. If you have any questions related to this or other projects feel free to contact me over [Mail](mailto:quantatech.securities@gmail.com)
- 1. If you liked this project please share it with your friends!
+ 1. If you have any questions related to this or other projects feel free to contact us over [Mail](mailto:quantatech.securities@gmail.com)
+
 
 
 
