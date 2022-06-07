@@ -7,9 +7,7 @@ input double TrailingStop  =30;
 input double MACDOpenLevel =3;
 input double MACDCloseLevel=2;
 input int    MATrendPeriod =26;
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
+
 void OnTick(void)
   {
    double MacdCurrent,MacdPrevious;
@@ -27,7 +25,6 @@ void OnTick(void)
       Print("TakeProfit less than 10");
       return;
      }
-//--- to simplify the coding and speed up access data are put into internal variables
    MacdCurrent=iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,0);
    MacdPrevious=iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_MAIN,1);
    SignalCurrent=iMACD(NULL,0,12,26,9,PRICE_CLOSE,MODE_SIGNAL,0);
@@ -38,13 +35,11 @@ void OnTick(void)
    total=OrdersTotal();
    if(total<1)
      {
-      //--- no opened orders identified
       if(AccountFreeMargin()<(1000*Lots))
         {
-         Print("We have no money. Free Margin = ",AccountFreeMargin());
+         Print("No money. Free Margin = ",AccountFreeMargin());
          return;
         }
-      //--- check for long position (BUY) possibility
       if(MacdCurrent<0 && MacdCurrent>SignalCurrent && MacdPrevious<SignalPrevious && 
          MathAbs(MacdCurrent)>(MACDOpenLevel*Point) && MaCurrent>MaPrevious)
         {
@@ -58,7 +53,6 @@ void OnTick(void)
             Print("Error opening BUY order : ",GetLastError());
          return;
         }
-      //--- check for short position (SELL) possibility
       if(MacdCurrent>0 && MacdCurrent<SignalCurrent && MacdPrevious>SignalPrevious && 
          MacdCurrent>(MACDOpenLevel*Point) && MaCurrent<MaPrevious)
         {
@@ -71,10 +65,10 @@ void OnTick(void)
          else
             Print("Error opening SELL order : ",GetLastError());
         }
-      //--- exit from the "no opened orders" block
+    
       return;
      }
-//--- it is important to enter the market correctly, but it is more important to exit it correctly...   
+  
    for(cnt=0;cnt<total;cnt++)
      {
       if(!OrderSelect(cnt,SELECT_BY_POS,MODE_TRADES))
@@ -82,26 +76,26 @@ void OnTick(void)
       if(OrderType()<=OP_SELL &&   // check for opened position 
          OrderSymbol()==Symbol())  // check for symbol
         {
-         //--- long position is opened
+         
          if(OrderType()==OP_BUY)
            {
-            //--- should it be closed?
+            
             if(MacdCurrent>0 && MacdCurrent<SignalCurrent && MacdPrevious>SignalPrevious && 
                MacdCurrent>(MACDCloseLevel*Point))
               {
-               //--- close order and exit
+               
                if(!OrderClose(OrderTicket(),OrderLots(),Bid,3,Violet))
                   Print("OrderClose error ",GetLastError());
                return;
               }
-            //--- check for trailing stop
+            
             if(TrailingStop>0)
               {
                if(Bid-OrderOpenPrice()>Point*TrailingStop)
                  {
                   if(OrderStopLoss()<Bid-Point*TrailingStop)
                     {
-                     //--- modify order and exit
+                    
                      if(!OrderModify(OrderTicket(),OrderOpenPrice(),Bid-Point*TrailingStop,OrderTakeProfit(),0,Green))
                         Print("OrderModify error ",GetLastError());
                      return;
@@ -109,25 +103,21 @@ void OnTick(void)
                  }
               }
            }
-         else // go to short position
-           {
-            //--- should it be closed?
+         else 
+           {   
             if(MacdCurrent<0 && MacdCurrent>SignalCurrent && 
                MacdPrevious<SignalPrevious && MathAbs(MacdCurrent)>(MACDCloseLevel*Point))
-              {
-               //--- close order and exit
+              {    
                if(!OrderClose(OrderTicket(),OrderLots(),Ask,3,Violet))
                   Print("OrderClose error ",GetLastError());
                return;
-              }
-            //--- check for trailing stop
+              }         
             if(TrailingStop>0)
               {
                if((OrderOpenPrice()-Ask)>(Point*TrailingStop))
                  {
                   if((OrderStopLoss()>(Ask+Point*TrailingStop)) || (OrderStopLoss()==0))
                     {
-                     //--- modify order and exit
                      if(!OrderModify(OrderTicket(),OrderOpenPrice(),Ask+Point*TrailingStop,OrderTakeProfit(),0,Red))
                         Print("OrderModify error ",GetLastError());
                      return;
